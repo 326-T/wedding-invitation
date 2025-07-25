@@ -5,10 +5,8 @@ import { submitInvitation } from "@/lib/actions";
 
 function AttendanceField({ isPending }: { isPending: boolean }) {
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
-        出席の可否 *
-      </label>
+    <fieldset>
+      <legend className="block text-sm font-medium text-gray-700 mb-2">出席の可否 *</legend>
       <div className="space-y-2">
         <label className="flex items-center">
           <input
@@ -33,7 +31,7 @@ function AttendanceField({ isPending }: { isPending: boolean }) {
           欠席します
         </label>
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -73,9 +71,7 @@ export default function InvitationForm() {
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        結婚式への招待状
-      </h2>
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">結婚式への招待状</h2>
 
       <form action={handleSubmit} className="space-y-4">
         {error && (
@@ -85,10 +81,7 @@ export default function InvitationForm() {
         )}
 
         <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
             お名前 *
           </label>
           <input
@@ -102,10 +95,7 @@ export default function InvitationForm() {
         </div>
 
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
             メールアドレス *
           </label>
           <input
@@ -121,10 +111,7 @@ export default function InvitationForm() {
         <AttendanceField isPending={isPending} />
 
         <div>
-          <label
-            htmlFor="guest_count"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="guest_count" className="block text-sm font-medium text-gray-700 mb-1">
             参加人数
           </label>
           <select
@@ -160,10 +147,7 @@ export default function InvitationForm() {
         </div>
 
         <div>
-          <label
-            htmlFor="message"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
             メッセージ
           </label>
           <textarea
