@@ -18,7 +18,7 @@ export interface InvitationResponse {
   email: string
   attendance: 'attending' | 'not_attending'
   guest_count: number
-  dietary_restrictions?: string
-  message?: string
+  dietary_restrictions: string | null
+  message: string | null
   created_at?: string
 }
