@@ -70,6 +70,35 @@ CREATE TABLE invitation_responses (
 
 ### Architecture
 - `/src/lib/supabase.ts` - Server-side Supabase client configuration using Service Role Key
-- `/src/app/api/invitation/route.ts` - API endpoint for form submissions
+- `/src/lib/actions.ts` - Server Actions for form submissions
 - `/src/components/InvitationForm.tsx` - Client-side form component
+- `/src/types/supabase.ts` - Auto-generated TypeScript types from Supabase schema
 - Server-side operations ensure secure data handling without exposing sensitive keys to the client
+
+## CI/CD and Code Quality
+
+### Static Analysis and Formatting
+- **Biome** is used instead of ESLint/Prettier for faster linting and formatting
+- Pre-commit hooks ensure code quality with husky and lint-staged
+- All code is automatically formatted and checked before commits
+
+### GitHub Actions Workflows
+- **CI Pipeline** (`ci.yml`): Runs on push/PR to main branch
+  - Code quality checks (Biome)
+  - TypeScript type checking
+  - Build verification
+  - Migration preview for PRs (shows diff in comments)
+  - Automatic Supabase migrations (main branch push only)
+  - Auto-generated type definitions
+
+### Commands
+- `npm run check` - Run Biome linting and formatting checks
+- `npm run check:fix` - Auto-fix linting and formatting issues
+- `npm run format` - Format code with Biome
+- `npx supabase gen types typescript --linked` - Generate TypeScript types from schema
+
+### Migration Workflow (Trunk-based Development)
+1. Create migration: `npx supabase migration new migration_name`
+2. Test locally: `npx supabase db reset`
+3. Create PR to main: Migration diff automatically shown in PR comments
+4. Merge to main: Automatic production migration and type generation
