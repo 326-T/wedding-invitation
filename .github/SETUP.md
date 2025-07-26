@@ -40,11 +40,12 @@
 
 ### CI/CD Pipeline (`ci.yml`)
 - **Trigger**: `main` ブランチへのpush/PR
+- **Permissions**: `contents: write`, `pull-requests: write`, `issues: write`
 - **Jobs**: 
   - Lint & Type Check (全てのイベント)
   - Test (全てのイベント)  
-  - Migration Preview (PR時のみ)
-  - Migration (main branch push時のみ)
+  - Migration Preview (PR時のみ) - PRコメントにマイグレーション差分を表示
+  - Migration (main branch push時のみ) - 本番マイグレーション実行
 
 ## Manual Migration
 
@@ -77,3 +78,8 @@ npx supabase db push
 4. **型生成に失敗**
    - スキーマが存在するか確認
    - `public` スキーマにテーブルが存在するか確認
+
+5. **PRコメント作成に失敗**
+   - リポジトリの Settings > Actions > General で "Workflow permissions" を確認
+   - "Read and write permissions" が選択されているか確認
+   - または "Read repository contents and packages permissions" + 個別権限設定

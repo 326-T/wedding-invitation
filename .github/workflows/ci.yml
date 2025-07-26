@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
 jobs:
   lint-and-type-check:
     name: Lint and Type Check
@@ -85,31 +90,32 @@ jobs:
           supabase db diff --linked --schema public || echo "No differences found"
 
       - name: Comment PR with migration info
-        if: always()
+        if: always() && github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
             const { execSync } = require('child_process');
+            let body = '## ✅ Database Migration Check\nNo database changes detected.';
+            
             try {
-              const diff = execSync('supabase db diff --schema public', { encoding: 'utf8' });
-              const body = diff ? 
-                `## 🗄️ Database Migration Preview\n\`\`\`sql\n${diff}\n\`\`\`` :
-                `## ✅ Database Migration Check\nNo database changes detected.`;
-              
-              github.rest.issues.createComment({
+              const diff = execSync('supabase db diff --schema public', { encoding: 'utf8' }).trim();
+              if (diff && diff.length > 0) {
+                body = `## 🗄️ Database Migration Preview\n\`\`\`sql\n${diff}\n\`\`\``;
+              }
+            } catch (error) {
+              console.log('Migration diff check completed - no changes detected');
+            }
+            
+            try {
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: body
               });
             } catch (error) {
-              console.log('No migration diff to show');
-              github.rest.issues.createComment({
-                issue_number: context.issue.number,
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                body: '## ✅ Database Migration Check\nNo database changes detected.'
-              });
+              console.error('Failed to create comment:', error.message);
+              core.setFailed(`Failed to create PR comment: ${error.message}`);
             }
 
   supabase-migration:
