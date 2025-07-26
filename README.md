@@ -92,12 +92,19 @@ npm run dev
 - `npm run start` - プロダクションサーバーの起動
 - `npm run lint` - ESLint によるコードチェック
 
+### コード品質
+- `npm run lint` - Biome による静的解析
+- `npm run format` - コードフォーマット
+- `npm run check` - リントとフォーマットのチェック
+- `npm run check:fix` - 自動修正付きチェック
+
 ### Supabase（ローカル開発）
 - `npx supabase start` - ローカル Supabase サービスの起動
 - `npx supabase stop` - ローカル Supabase サービスの停止
 - `npx supabase status` - サービスの状態確認
 - `npx supabase db reset` - データベースのリセット（マイグレーション適用）
 - `npx supabase migration new <name>` - 新しいマイグレーションファイルの作成
+- `npx supabase gen types typescript --linked` - TypeScript型定義の生成
 
 ## プロジェクト構成
 
@@ -114,6 +121,45 @@ src/
     └── supabase.ts                # Supabase クライアント設定
 ```
 
+## CI/CD Pipeline
+
+このプロジェクトは GitHub Actions を使用した自動化された CI/CD パイプラインを備えています。
+
+### 自動化された処理
+
+#### メインブランチ (`main`) プッシュ時
+- コード品質チェック（Biome）
+- TypeScript 型チェック
+- ビルドテスト
+- **Supabase マイグレーション自動実行**
+- 型定義ファイル自動生成・コミット
+
+#### プルリクエスト時
+- コード品質チェック
+- TypeScript 型チェック
+- ビルドテスト
+- **マイグレーション差分表示**（PRコメント）
+
+### 必要な設定
+
+GitHub Actions を使用するには、リポジトリに以下のシークレットが必要です：
+
+| シークレット名 | 説明 |
+|---------------|------|
+| `SUPABASE_ACCESS_TOKEN` | Supabase CLI 用アクセストークン |
+| `SUPABASE_PROJECT_REF` | 本番環境プロジェクト ID |
+| `SUPABASE_DB_PASSWORD` | データベースパスワード |
+
+詳細な設定手順は [.github/SETUP.md](./.github/SETUP.md) を参照してください。
+
+### ワークフロー（トランクベース開発）
+
+1. **機能開発** → ローカルまたはfeatureブランチで開発
+2. **プルリクエスト** → `main` ブランチへの PR 作成
+   - 自動で品質チェック実行
+   - マイグレーション差分がPRコメントに表示
+3. **本番デプロイ** → マージ後、自動でマイグレーション実行
+
 ## デプロイ
 
 ### Vercel でのデプロイ
@@ -123,3 +169,12 @@ src/
 3. デプロイ
 
 詳細は [Next.js デプロイドキュメント](https://nextjs.org/docs/app/building-your-application/deploying) を参照してください。
+
+### 環境変数
+
+本番環境では以下の環境変数が必要です：
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_production_service_role_key
+```
