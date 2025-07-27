@@ -149,7 +149,8 @@ jobs:
 
       - name: Check linked project info
         run: |
-          cat .supabase/config.toml | grep -E "(project_id|db_password)"
+          ls -la .supabase/ || echo "No .supabase directory"
+          cat .supabase/config.toml || echo "No config.toml file"
           
       - name: Run database migrations
         run: supabase db push --debug
