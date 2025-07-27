@@ -96,7 +96,7 @@ jobs:
           script: |
             const { execSync } = require('child_process');
             let body = '## ✅ Database Migration Check\nNo database changes detected.';
-            
+
             try {
               const diff = execSync('supabase db diff --schema public', { encoding: 'utf8' }).trim();
               if (diff && diff.length > 0) {
@@ -105,7 +105,7 @@ jobs:
             } catch (error) {
               console.log('Migration diff check completed - no changes detected');
             }
-            
+
             try {
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
@@ -143,9 +143,11 @@ jobs:
 
       - name: Link Supabase project
         run: |
-          supabase link --project-ref ${{ secrets.SUPABASE_PROJECT_REF }} --password ${{ secrets.SUPABASE_DB_PASSWORD }}
+          supabase link --project-ref "$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
 
       - name: Run database migrations
         run: supabase db push
